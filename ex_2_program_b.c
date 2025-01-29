@@ -1,47 +1,38 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>  // Add this header for strcmp
 
-void insertElement(int arr[], int *size, int element) {
-    arr[*size] = element;
-    (*size)++;
-}
-
-void removeElement(int arr[], int *size, int element) {
-    int i, found = 0;
-    for (i = 0; i < *size; i++) {
-        if (arr[i] == element) {
-            found = 1;
-            for (int j = i; j < *size - 1; j++) {
-                arr[j] = arr[j + 1];
-            }
-            (*size)--;
-            break;
-        }
-    }
-    if (!found) {
-        printf("Element not found!\n");
-    }
-}
-
+// Function to perform binary search (array must be sorted)
 int binarySearch(int arr[], int size, int element) {
-    int low = 0, high = size - 1, mid;
-    while (low <= high) {
-        mid = low + (high - low) / 2;
-        if (arr[mid] == element) {
-            return mid;
-        }
-        if (arr[mid] < element) {
-            low = mid + 1;
-        } else {
-            high = mid - 1;
-        }
+    int left = 0, right = size - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == element)
+            return mid; // Element found
+        
+        if (arr[mid] < element)
+            left = mid + 1; // Search in right half
+        else
+            right = mid - 1; // Search in left half
     }
-    return -1;
+    return -1; // Element not found
 }
 
+// Function to sort the array using Bubble Sort (for simplicity)
+void bubbleSort(int arr[], int size) {
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+// Function to print the array
 void printArray(int arr[], int size) {
-    printf("Array: ");
+    printf("Sorted Array: ");
     for (int i = 0; i < size; i++) {
         printf("%d ", arr[i]);
     }
@@ -49,34 +40,33 @@ void printArray(int arr[], int size) {
 }
 
 int main() {
-    int arr[100], size = 0, choice, element, index;
+    int arr[100], size, choice, element, index;
 
+    // Taking input for array size and elements
+    printf("Enter the number of elements: ");
+    scanf("%d", &size);
+    
+    printf("Enter the elements: ");
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    // Sorting the array before performing Binary Search
+    bubbleSort(arr, size);
+    printArray(arr, size);
+
+    // Searching menu loop
     while (1) {
         printf("\nMenu:\n");
-        printf("1. Insert Element\n");
-        printf("2. Remove Element\n");
-        printf("3. Search using Binary Search\n");
-        printf("4. Display Array\n");
-        printf("5. Exit\n");
+        printf("1. Search using Binary Search\n");
+        printf("2. Quit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
         switch (choice) {
             case 1:
-                printf("Enter element to insert: ");
-                scanf("%d", &element);
-                insertElement(arr, &size, element);
-                break;
-            case 2:
-                printf("Enter element to remove: ");
-                scanf("%d", &element);
-                removeElement(arr, &size, element);
-                break;
-            case 3:
-                // Ensure the array is sorted before binary search
                 printf("Enter element to search for: ");
                 scanf("%d", &element);
-                qsort(arr, size, sizeof(int), (int (*)(const void *, const void *))strcmp);
                 index = binarySearch(arr, size, element);
                 if (index != -1) {
                     printf("Element found at index %d.\n", index);
@@ -84,10 +74,8 @@ int main() {
                     printf("Element not found.\n");
                 }
                 break;
-            case 4:
-                printArray(arr, size);
-                break;
-            case 5:
+            case 2:
+                printf("Exiting program.\n");
                 return 0;
             default:
                 printf("Invalid choice. Please try again.\n");
