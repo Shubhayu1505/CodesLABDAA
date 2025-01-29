@@ -4,7 +4,7 @@ List of all Experiments
 1. a) Insertion Sort
 1. b) Bubble Sort
 
-2.a)Linear Search 
+2. a)Linear Search 
 2. b)Binary Search
 
 3. Merge Sort
