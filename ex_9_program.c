@@ -1,87 +1,88 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
-#define MAX 100
+#define N 8
 
-// Function to print the board
-void printBoard(int board[MAX][MAX], int N) {
+void printBoard(char board[N][N]) {
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            printf("%d ", board[i][j]);
+            printf("%c ", board[i][j]);
         }
         printf("\n");
     }
 }
 
-// Function to check if a queen can be placed on board[row][col]
-// This function checks the column and both diagonals for conflicts
-bool isSafe(int board[MAX][MAX], int row, int col, int N) {
-    // Check the column
-    for (int i = 0; i < row; i++) {
-        if (board[i][col] == 1) {
-            return false;
+int isSafe(int board[N][N], int row, int col) {
+    for (int i = 0; i < col; i++) {
+        if (board[row][i]) {
+            return 0;
         }
     }
-
-    // Check the upper-left diagonal
     for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
-        if (board[i][j] == 1) {
-            return false;
+        if (board[i][j]) {
+            return 0;
         }
     }
-
-    // Check the upper-right diagonal
-    for (int i = row, j = col; i >= 0 && j < N; i--, j++) {
-        if (board[i][j] == 1) {
-            return false;
+    for (int i = row, j = col; j >= 0 && i < N; i++, j--) {
+        if (board[i][j]) {
+            return 0;
         }
     }
-
-    return true;
+    return 1;
 }
 
-// Function to solve the N Queen problem using backtracking
-bool solveNQueens(int board[MAX][MAX], int row, int N) {
-    // If all queens are placed
-    if (row >= N) {
-        return true;
+void shuffle(int arr[]) {
+    for (int i = N - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
+}
 
-    // Consider this row and try placing the queen in all columns one by one
-    for (int col = 0; col < N; col++) {
-        // Check if it's safe to place the queen in board[row][col]
-        if (isSafe(board, row, col, N)) {
-            // Place the queen
+int solveNQueens(int board[N][N], int col) {
+    if (col >= N) {
+        return 1;
+    }
+    int rows[N];
+    for (int i = 0; i < N; i++) {
+        rows[i] = i;
+    }
+    shuffle(rows);
+    for (int i = 0; i < N; i++) {
+        int row = rows[i];
+        if (isSafe(board, row, col)) {
             board[row][col] = 1;
-
-            // Recursively place the queen in the next row
-            if (solveNQueens(board, row + 1, N)) {
-                return true;
+            if (solveNQueens(board, col + 1)) {
+                return 1;
             }
-
-            // If placing queen in board[row][col] doesn't lead to a solution, backtrack
-            board[row][col] = 0; // Remove queen (backtrack)
+            board[row][col] = 0;
         }
     }
-
-    // If the queen cannot be placed in any column in this row, return false
-    return false;
+    return 0;
 }
 
 int main() {
-    int N;
-
-    printf("Enter the number of queens (N): ");
-    scanf("%d", &N);
-
-    int board[MAX][MAX] = {0};
-
-    if (solveNQueens(board, 0, N)) {
-        printf("Solution to the N-Queens problem:\n");
-        printBoard(board, N);
-    } else {
-        printf("Solution does not exist\n");
+    srand(time(NULL));
+    char board[N][N];
+    int boardInt[N][N] = {0};
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            board[i][j] = 'O';
+        }
     }
-
+    if (solveNQueens(boardInt, 0)) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (boardInt[i][j] == 1) {
+                    board[i][j] = 'X';
+                }
+            }
+        }
+        printBoard(board);
+    } else {
+        printf("Solution does not exist.\n");
+    }
     return 0;
 }
